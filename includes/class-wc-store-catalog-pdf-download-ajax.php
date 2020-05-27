@@ -45,6 +45,10 @@ class WC_Store_Catalog_PDF_Download_Ajax {
 	public function generate_pdf_ajax() {
 		$nonce = $_POST['ajaxPDFDownloadNonce'];
 
+		$productId = $_POST['productId'];
+		$categoryName = $_POST['categoryName'];
+		$url = $_POST['url'];
+
 		// bail if nonce don't check out
 		if ( ! wp_verify_nonce( $nonce, '_wc_store_catalog_pdf_download_nonce' ) ) {
 		     die ( 'error' );		
@@ -104,7 +108,30 @@ class WC_Store_Catalog_PDF_Download_Ajax {
 			$upload_dir = wp_upload_dir(); 
 			$pdf_path   = $upload_dir['basedir'] . '/woocommerce-store-catalog-pdf-download/';
 			$pdf_url    = $upload_dir['baseurl'] . '/woocommerce-store-catalog-pdf-download/';
-			$filename   = apply_filters( 'wc_store_catalog_pdf_download_filename', str_replace( ' ', '-', wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ) . '-' . __( 'Store-Catalog', 'woocommerce-store-catalog-pdf-download' ) . '-' . time() . '.pdf' );
+
+            if (strpos($url, '/product-category/') !== false) {
+                $filename = str_replace( ' ', '-', wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) );
+                $filename .= '-' . str_replace( ' ', '-', wp_specialchars_decode( $categoryName, ENT_QUOTES ) );
+                $filename .= '.pdf';
+            } else if (strpos($url, '/product/') !== false) {
+                $product = wc_get_product($productId);
+                $category = null;
+                $terms =  get_the_terms($productId, 'product_cat' );
+                if ( $terms && ! is_wp_error( $terms ) ) {
+                    $category = $terms[0]->name;
+                }
+
+                $filename = str_replace( ' ', '-', wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) );
+                if ($category) {
+                    $filename .= '-' . str_replace( ' ', '-', wp_specialchars_decode( $category, ENT_QUOTES ) );
+                }
+                $filename .= '-' . str_replace( ' ', '-', wp_specialchars_decode( $product->get_name(), ENT_QUOTES ) );
+                $filename .= '.pdf';
+            } else {
+                $filename = str_replace( ' ', '-', wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ) . '.pdf';
+            }
+
+            $filename = apply_filters( 'wc_store_catalog_pdf_download_filename', $filename);
 
 			if ( ! is_dir( $pdf_path ) ) {
 				mkdir( $pdf_path, 0777, true );

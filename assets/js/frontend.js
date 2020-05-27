@@ -18,6 +18,9 @@ jQuery( document ).ready( function( $ ) {
 				var $data = {
 						action: 'wc_store_catalog_pdf_download_frontend_generate_pdf_ajax',
 						ajaxPDFDownloadNonce: wc_store_catalog_pdf_download_local.ajaxPDFDownloadNonce,
+						url: wc_store_catalog_pdf_download_local.url,
+						productId: wc_store_catalog_pdf_download_local.productId,
+						categoryName: wc_store_catalog_pdf_download_local.categoryName,
 						layout: $( this ).parent( '.wc-store-catalog-pdf-download' ).find( 'input[name="pdf_layout"]' ).val(),
 						is_single: $( this ).parent( '.wc-store-catalog-pdf-download' ).find( 'input[name="is_single"]' ).val(),
 						custom_pdf: $( this ).parent( '.wc-store-catalog-pdf-download' ).find( 'input[name="custom_pdf"]' ).val(),
@@ -26,13 +29,13 @@ jQuery( document ).ready( function( $ ) {
 
 				$.post( wc_store_catalog_pdf_download_local.ajaxurl, $data, function( response ) {
 					// remove the spinning loader on pdf button
-					$( thisButton ).removeClass( 'loading' );
-					
-					if ( response.length && response.length !== 'error' ) {
 
+					$( thisButton ).removeClass( 'loading' );
+
+					if ( response.length && response.length !== 'error' ) {
 						document.location = response;
 					}
-				});	
+				});
 			});
 		}
 	}; // close namespace
