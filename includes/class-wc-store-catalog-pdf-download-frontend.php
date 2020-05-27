@@ -53,12 +53,16 @@ class WC_Store_Catalog_PDF_Download_Frontend {
 
 		wp_enqueue_style( 'wc-store-catalog-pdf-download-style', plugins_url( 'assets/css/frontend-styles.css', dirname( __FILE__ ) ) );
 
-		wp_enqueue_script( 'wc-store-catalog-pdf-download-js', plugins_url( 'assets/js/frontend' . $suffix . '.js', dirname( __FILE__ ) ) );
+		wp_enqueue_script( 'wc-store-catalog-pdf-download-js', plugins_url( 'assets/js/frontend.js', dirname( __FILE__ ) ) );
+
 
 		$localized_vars = array(
 			'ajaxurl'              => admin_url( 'admin-ajax.php' ),
-			'ajaxPDFDownloadNonce' => wp_create_nonce( '_wc_store_catalog_pdf_download_nonce' )
-		);
+			'ajaxPDFDownloadNonce' => wp_create_nonce( '_wc_store_catalog_pdf_download_nonce' ),
+            'productId' => get_the_ID(),
+            'categoryName' => single_cat_title('', false),
+            'url' => $_SERVER['REQUEST_URI']
+        );
 		
 		wp_localize_script( 'wc-store-catalog-pdf-download-js', 'wc_store_catalog_pdf_download_local', $localized_vars );
 
